@@ -1,0 +1,176 @@
+--------------------------------------------------------------------------------
+-- LeweiTcpClient module for NODEMCU
+-- LICENCE: http://opensource.org/licenses/MIT
+-- yangbo<gyangbo@gmail.com>
+--------------------------------------------------------------------------------
+
+--[[
+here is the demo.lua:
+require("LeweiTcpClient")
+LeweiTcpClient.init("01","your_api_key_here")
+function test(p1)
+   print("test function!"..p1)
+end
+function test1()
+   print("test function!")
+end
+LeweiTcpClient.addUserFunction(test,"openMyAC")
+LeweiTcpClient.addUserFunction(test1,"closeMyAC")
+--]]
+
+local moduleName = ...
+local M = {}
+_G[moduleName] = M
+
+
+local socket
+local server = "tcp.lewei50.com"--"192.168.1.129"--
+local port = 9960
+local bConnected = false
+local gateWay = ""
+local userKey = ""
+
+local uFunctionNode = nil
+local uSwitchNode = nil
+
+function M.init(gw,userkey)
+     gateWay = gw
+     userKey = userkey
+     M.connectServer()
+     tmr.alarm(1, 50000, 1, function() 
+          M.keepOnline()
+     end)
+end
+
+function M.connectServer()
+     print(_G["iotTcpSocket"])
+     
+     if(_G["iotTcpSocket"] ~= nil) then
+          socket = _G["iotTcpSocket"]
+          socket:on("disconnection", function(sck, response)
+          print("remove disconnection listener")
+          end)
+          socket:close()
+     end
+     socket=net.createConnection(net.TCP, 0)
+     _G["iotTcpSocket"] = socket
+     socket:connect(port, server)
+     socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+     
+     --HTTP响应内容
+     
+     socket:on("connection", function(sck, response)
+          print("connection")
+          bConnected = true
+     end)
+     socket:on("reconnection", function(sck, response)
+          print("reconnection")
+     end)
+     socket:on("disconnection", function(sck, response)
+          print("disconnection")
+          bConnected = false
+          M.connectServer()
+     end)
+     socket:on("receive", function(sck, response)
+          print("receive"..response)
+          M.dealResponse(response)
+     end)
+     socket:on("sent", function(sck, response)
+          print("sent")
+     end)
+     
+end
+
+function M.keepOnline()
+     if bConnected == true then
+          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+     end
+end
+
+-- add user defined function
+function M.addUserFunction(uFunctionAdd,uFunctionName)
+     print("addUserFunction")
+     --print(uFunctionAdd)
+     --print(uFunctionName)
+     local l = uFunctionNode
+     while l do
+          --make sure no Duplicated Adding
+          if (uFunctionName == l.value.ufName) then
+               return
+          end
+         l = l.next
+     end
+     uFunctionNode = {next = uFunctionNode, value = {ufAdd=uFunctionAdd,ufName=uFunctionName}}
+     --uFunctionAdd()
+end
+
+--add user defined switch with a default value
+function M.addUserSwitch(uSwitchAdd,uSwitchName,uSwitchValue)
+     print("addUserSwitch")
+     --print(uSwitchAdd)
+     --print(uSwitchName)
+     --print(uSwitchValue)
+     local l = uSwitchNode
+     while l do
+          --make sure no Duplicated Adding
+          if (uSwitchName == l.value.usName) then
+               return
+          end
+         l = l.next
+     end
+     uSwitchNode = {next = uSwitchNode, value = {usAdd=uSwitchAdd,usName=uSwitchName,usValue=uSwitchValue}}
+     
+end
+
+function M.dealResponse(str)
+     ufunctionName = M.getStrValue(str,"f")
+--[[
+     if(ufunctionName == "getAllSensors") then
+          local l = uSwitchNode
+          while l do
+               if (uSwitchName == l.value.usName) then
+                    print("in userSwitch")
+                    return
+               end
+              l = l.next
+          end
+          M.sendFeedBack("OK","{\"id\":\"switch02\",\"value\":\"1\"}")
+          str = nil
+          return
+     end
+--]]
+     ufunctionP1 = M.getStrValue(str,"p1")
+     
+     local l = uFunctionNode
+     while l do
+          if (ufunctionName == l.value.ufName) then
+               l.value.ufAdd(ufunctionP1)
+               M.sendFeedBack("OK")
+               return
+          end
+         l = l.next
+     end
+
+     str = nil
+end
+
+function M.getStrValue(str,strName)
+     i,j = string.find(str,"\""..strName.."\":\"")
+     --print (i,j)
+     --print(string.sub(str, j+1, -1))
+     k,l = string.find(string.sub(str, j+1, -1),"\"")
+     --print(k,l)
+     return string.sub(str, j+1,j-1+l)
+end
+
+function M.sendFeedBack(msg,data)
+     responseStr = "{\"method\":\"response\",\"result\":{\"successful\":true,\"message\":\""..msg.."\""
+     --[[
+     if(data ~= nil) then
+          responseStr = responseStr..",\"data\":\""..data.."\""
+     end
+     --]]
+     responseStr = responseStr.."}}&^!"
+     socket:send(responseStr)
+     responseStr = nil
+end
