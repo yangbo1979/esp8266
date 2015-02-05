@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 
 --[[
-here is the demo.lua:
+here is the init.lua:
 require("EasyWebConfig")
 EasyWebConfig.doMyFile("demo.lua")
 --]]
