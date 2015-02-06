@@ -44,17 +44,23 @@ if( file.open("network_user_cfg.lua") ~= nil) then
           cnt = 0
           tmr.alarm(1, 1000, 1, function()
                if (wifi.sta.getip() == nil) and (cnt < 10) then
-                    print(".")
+                    --print(".")
                     cnt = cnt + 1
                else
                     tmr.stop(1)
                     if (cnt < 10) then print("IP:"..wifi.sta.getip())
-                         _G["wifiStatue"] = "OK"
+                         --_G["wifiStatue"] = "OK"
                          node.led(0,0)
                          if(userScriptFile ~="") then 
-                              print(node.heap())
-                              M = nil
-                              print(node.heap())
+                              --print(node.heap())
+                              --for n in pairs(_G) do print(n) end
+                              ssid= nil
+                              password = nil
+                              _G["config"] = nil
+                              --M = nil
+                              --print("---")
+                              --for n in pairs(_G) do print(n) end
+                              --print(node.heap())
                               dofile(userScriptFile) 
                          end
                     else print("FailToConnect,LoadDefault")
