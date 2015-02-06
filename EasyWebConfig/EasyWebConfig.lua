@@ -7,6 +7,8 @@
 --[[
 here is the demo.lua:
 require("EasyWebConfig")
+--EasyWebConfig.addVar("gateWay")
+--EasyWebConfig.addVar("userKey")
 EasyWebConfig.doMyFile("demo.lua")
 --]]
 local moduleName = ...
