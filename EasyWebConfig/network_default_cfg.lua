@@ -42,7 +42,7 @@ srv:listen(80,function(conn)
           if (string.find(paraStr,"=")~=nil) then
                file.open("network_user_cfg.lua","w+")
                for name, value in string.gfind(paraStr, "([^&=]+)=([^&=]+)") do
-                 file.writeline(name.."=\""..decodeURI(value).."\"")
+                 file.writeline(decodeURI(name).."=\""..decodeURI(value).."\"")
                end
                
                _G["wifiStatue"]="Saved"
