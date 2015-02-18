@@ -1,6 +1,12 @@
 ssid="ESP8266_".. node.chipid()
 password="12345678"
 
+function decodeURI(s)
+    s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
+    return s
+end
+
+
 _G["para"] = {}
 
 wifi.setmode(wifi.SOFTAP)
@@ -36,7 +42,7 @@ srv:listen(80,function(conn)
           if (string.find(paraStr,"=")~=nil) then
                file.open("network_user_cfg.lua","w+")
                for name, value in string.gfind(paraStr, "([^&=]+)=([^&=]+)") do
-                 file.writeline(name.."=\""..value.."\"")
+                 file.writeline(name.."=\""..decodeURI(value).."\"")
                end
                
                _G["wifiStatue"]="Saved"
@@ -51,7 +57,7 @@ srv:listen(80,function(conn)
           conn:send("<meta http-equiv=\"refresh\" content=\"30\">")
           end
           conn:send("</head><body>")
-          conn:send("<div><h2><b>Configurate ESP8266</b></h2>")
+          conn:send("<div><h2>Configuration</h2>")
           conn:send("<font color=\"red\">[<i>".._G["wifiStatue"].."</i>]</color>")
           if(_G["wifiStatue"]=="Saved") then
           conn:send("<br>wait 30 sec<br>Server lost mean NO ERROR MET.")
