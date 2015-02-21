@@ -114,10 +114,8 @@ local function connectServer()
           socket:close()
      end
      socket=net.createConnection(net.TCP, 0)
-     _G["iotTcpSocket"] = socket
-     socket:connect(port, server)
-     socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
-     
+
+
      --HTTP响应内容
      --[[
      socket:on("connection", function(sck, response)
@@ -137,6 +135,7 @@ local function connectServer()
           M.connectServer()
      end)
      --]]
+     
      socket:on("receive", function(sck, response)
           --print("receive"..response)
           dealResponse(response)
@@ -146,12 +145,22 @@ local function connectServer()
           print(tmr.now().."sent")
      end)
      
+     _G["iotTcpSocket"] = socket
+     socket:connect(port, server)
+     socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+     
+     
 end
 
 local function keepOnline()
      --if bConnected == true then
-          if(socket == nil) then connectServer() end
-          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+          --print(node.heap())
+          print("!")
+          if(socket == nil) then
+               connectServer()
+          else
+               socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+          end
           --print(node.heap())
      --end
 end
@@ -182,6 +191,7 @@ end
 
 
 function M.init(gw,userkey)
+     --compile to .lc file to reduce memory
      if(_G["gateWay"] ~= nil) then gateWay = _G["gateWay"]
      else gateWay = gw
      end
@@ -189,6 +199,7 @@ function M.init(gw,userkey)
      else userKey = userkey
      end
      
+     --print("i"..node.heap())
      connectServer()
      tmr.alarm(1, 50000, 1, function() 
           keepOnline()
