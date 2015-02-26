@@ -22,7 +22,7 @@ _G[moduleName] = M
 local socket
 local server = "tcp.lewei50.com"--"192.168.1.129"--
 local port = 9960
---local bConnected = false
+local bConnected = false
 local gateWay = ""
 local userKey = ""
 
@@ -105,28 +105,19 @@ local function dealResponse(str)
 end
 
 local function connectServer()
-     print("c")
-     --[[
-     if(_G["iotTcpSocket"] ~= nil) then
-          socket = _G["iotTcpSocket"]
-          socket:on("disconnection", function(sck, response)
-          --print("remove disconnection listener")
-          end)
-          socket:close()
-          _G["iotTcpSocket"] = nil
-     end
-     ]]--
+
      socket=net.createConnection(net.TCP, 0)
 
 
      --HTTP响应内容
-     --[[
+     
      socket:on("connection", function(sck, response)
-          print("connection")
-          print(node.heap())
-          --bConnected = true
+          print("c")
+          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+          --print(node.heap())
+          bConnected = true
      end)
-     --]]
+     
      --[[
      socket:on("reconnection", function(sck, response)
           print("r")
@@ -136,8 +127,7 @@ local function connectServer()
           print("d")
           socket = nil
           connectServer()
-          --bConnected = false
-          --M.connectServer()
+          bConnected = false
      end)
      
      socket:on("receive", function(sck, response)
@@ -149,24 +139,18 @@ local function connectServer()
           print(tmr.now().."sent")
      end)
      
-     --_G["iotTcpSocket"] = socket
      socket:connect(port, server)
-     --socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
-     
-     
+   
 end
 
+
 local function keepOnline()
-     --if bConnected == true then
-          --print(node.heap())
+     if bConnected == true then
           print("!")
-          --if(socket == nil) then
-               --connectServer()
-          --else
-               socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
-          --end
-          --print(node.heap())
-     --end
+          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+     else
+          connectServer()         
+     end
 end
 
 
@@ -195,7 +179,6 @@ end
 
 
 function M.init(gw,userkey)
-     --compile to .lc file to reduce memory
      if(_G["gateWay"] ~= nil) then gateWay = _G["gateWay"]
      else gateWay = gw
      end
