@@ -105,14 +105,17 @@ local function dealResponse(str)
 end
 
 local function connectServer()
-     --print(_G["iotTcpSocket"])
+     print("c")
+     --[[
      if(_G["iotTcpSocket"] ~= nil) then
           socket = _G["iotTcpSocket"]
           socket:on("disconnection", function(sck, response)
           --print("remove disconnection listener")
           end)
           socket:close()
+          _G["iotTcpSocket"] = nil
      end
+     ]]--
      socket=net.createConnection(net.TCP, 0)
 
 
@@ -124,17 +127,18 @@ local function connectServer()
           --bConnected = true
      end)
      --]]
-     
      --[[
      socket:on("reconnection", function(sck, response)
-          print("reconnection")
+          print("r")
      end)
+     ]]--
      socket:on("disconnection", function(sck, response)
-          print("disconnection")
-          bConnected = false
-          M.connectServer()
+          print("d")
+          socket = nil
+          connectServer()
+          --bConnected = false
+          --M.connectServer()
      end)
-     --]]
      
      socket:on("receive", function(sck, response)
           --print("receive"..response)
@@ -145,7 +149,7 @@ local function connectServer()
           print(tmr.now().."sent")
      end)
      
-     _G["iotTcpSocket"] = socket
+     --_G["iotTcpSocket"] = socket
      socket:connect(port, server)
      socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
      
