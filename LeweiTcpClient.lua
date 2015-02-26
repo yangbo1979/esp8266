@@ -24,7 +24,7 @@ local M = {}
 _G[moduleName] = M
 
 
-local socket
+local socket = nil
 local server = "tcp.lewei50.com"--"192.168.1.129"--
 local port = 9960
 local bConnected = false
@@ -110,7 +110,7 @@ local function dealResponse(str)
 end
 
 local function connectServer()
-
+     if (socket == nil) then 
      socket=net.createConnection(net.TCP, 0)
 
 
@@ -130,7 +130,7 @@ local function connectServer()
      ]]--
      socket:on("disconnection", function(sck, response)
           print("d")
-          socket = nil
+          --socket = nil
           connectServer()
           bConnected = false
      end)
@@ -144,6 +144,8 @@ local function connectServer()
           print(tmr.now().."sent")
      end)
      
+     end
+  
      socket:connect(port, server)
    
 end
