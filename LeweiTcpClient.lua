@@ -5,12 +5,17 @@
 --------------------------------------------------------------------------------
 
 --[[
-here is the demo.lua:
+--下面代码是在esp8266刷了nodemcu的固件基础上，使用LeweiTcpClient库反向控制“控制器”的示例
+--刷入此代码后，请运行node.compile("LeweiTcpClient.lua"将代码编译成lc文件，优化运行空间。
+--here is the demo.lua:
+
 require("LeweiTcpClient")
 LeweiTcpClient.init("01","your_api_key_here")
+--这里是你自定义的按钮按下后的执行代码
 function test(p1)
    print("test function!"..p1)
 end
+--test是上面的函数，"switch03"是定义在乐联网网站的控制器的标识，1是控制器的初始值
 LeweiTcpClient.addUserSwitch(test,"switch03",1)
 --]]
 
