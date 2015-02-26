@@ -7,8 +7,10 @@
 --[[
 here is the demo.lua:
 require("EasyWebConfig")
+--这里通过web配置的gateWay和userKey可以在你的代码里通过_G["gateWay"],_G["userKey"]来直接使用
 --EasyWebConfig.addVar("gateWay")
 --EasyWebConfig.addVar("userKey")
+--这里的demo.lua是需要运行的自己的代码文件
 EasyWebConfig.doMyFile("demo.lua")
 --]]
 local moduleName = ...
