@@ -151,7 +151,7 @@ local function connectServer()
      
      --_G["iotTcpSocket"] = socket
      socket:connect(port, server)
-     socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+     --socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
      
      
 end
@@ -160,11 +160,11 @@ local function keepOnline()
      --if bConnected == true then
           --print(node.heap())
           print("!")
-          if(socket == nil) then
-               connectServer()
-          else
+          --if(socket == nil) then
+               --connectServer()
+          --else
                socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
-          end
+          --end
           --print(node.heap())
      --end
 end
