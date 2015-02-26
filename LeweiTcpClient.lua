@@ -5,24 +5,19 @@
 --------------------------------------------------------------------------------
 
 --[[
---下面代码是在esp8266刷了nodemcu的固件基础上，使用LeweiTcpClient库反向控制“控制器”的示例
---刷入此代码后，请运行node.compile("LeweiTcpClient.lua"将代码编译成lc文件，优化运行空间。
---here is the demo.lua:
+demo.lua:
 
 require("LeweiTcpClient")
 LeweiTcpClient.init("01","your_api_key_here")
---这里是你自定义的按钮按下后的执行代码
 function test(p1)
    print("test function!"..p1)
 end
---test是上面的函数，"switch03"是定义在乐联网网站的控制器的标识，1是控制器的初始值
 LeweiTcpClient.addUserSwitch(test,"switch03",1)
---]]
+]]--
 
 local moduleName = ...
 local M = {}
 _G[moduleName] = M
-
 
 local socket = nil
 local server = "tcp.lewei50.com"--"192.168.1.129"--
@@ -30,7 +25,6 @@ local port = 9960
 local bConnected = false
 local gateWay = ""
 local userKey = ""
-
 local uSwitchNode = nil
 
 
@@ -54,10 +48,8 @@ local function sendFeedBack(msg,data)
      responseStr = nil
 end
 
-
 local function dealResponse(str)
      ufunctionName = getStrValue(str,"f")
-
      if(ufunctionName == "getAllSensors") then
           local l = uSwitchNode
           nodeStr = ""
@@ -69,9 +61,8 @@ local function dealResponse(str)
                else
                     nodeStr = nodeStr..","
                end
-         
                nodeStr = nodeStr .."{\"id\":\""..l.value.usName.."\",\"value\":\""..l.value.usValue.."\"}"
-              l = l.next
+               l = l.next
           end
           bFirstNode = nil
           sendFeedBack("OK",nodeStr)
@@ -104,16 +95,15 @@ local function dealResponse(str)
           
           return
      end
-
-
      str = nil
 end
 
 local function connectServer()
-     if (socket == nil) then 
-     socket=net.createConnection(net.TCP, 0)
-
-
+     print("cs")
+     --if (socket == nil) then 
+          socket=net.createConnection(net.TCP, 0)
+     --end
+     
      --HTTP响应内容
      
      socket:on("connection", function(sck, response)
@@ -122,7 +112,6 @@ local function connectServer()
           --print(node.heap())
           bConnected = true
      end)
-     
      --[[
      socket:on("reconnection", function(sck, response)
           print("r")
@@ -143,17 +132,14 @@ local function connectServer()
      socket:on("sent", function(sck, response)
           print(tmr.now().."sent")
      end)
-     
-     end
-  
      socket:connect(port, server)
    
 end
 
 
 local function keepOnline()
+     print("k")
      if bConnected == true then
-          print("!")
           socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
      else
           connectServer()         
