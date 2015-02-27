@@ -99,46 +99,45 @@ local function dealResponse(str)
 end
 
 local function connectServer()
-     print("cs")
-     --if (socket == nil) then 
-          socket=net.createConnection(net.TCP, 0)
-     --end
-     
+     --print("cs")
+     --print(node.heap())
+     socket=net.createConnection(net.TCP, 0)
+     --print(node.heap())
      --HTTP响应内容
      
      socket:on("connection", function(sck, response)
-          print("c")
+          --print("c")
           socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
           --print(node.heap())
           bConnected = true
      end)
+     --print(node.heap())
      --[[
      socket:on("reconnection", function(sck, response)
           print("r")
      end)
      ]]--
      socket:on("disconnection", function(sck, response)
-          print("d")
-          --socket = nil
+          --print("d")
           connectServer()
           bConnected = false
      end)
-     
+     --print(node.heap())
      socket:on("receive", function(sck, response)
           --print("receive"..response)
           dealResponse(response)
      end)
-     
+     --print(node.heap())
      socket:on("sent", function(sck, response)
           print(tmr.now().."sent")
      end)
+     --print(node.heap())
      socket:connect(port, server)
-   
 end
 
 
 local function keepOnline()
-     print("k")
+     --print("k")
      if bConnected == true then
           socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
      else
@@ -178,8 +177,7 @@ function M.init(gw,userkey)
      if(_G["userKey"] ~= nil) then userKey = _G["userKey"]
      else userKey = userkey
      end
-     
-     --print("i"..node.heap())
+
      connectServer()
      tmr.alarm(1, 50000, 1, function() 
           keepOnline()
