@@ -26,6 +26,7 @@ local bConnected = false
 local gateWay = ""
 local userKey = ""
 local uSwitchNode = nil
+local strOnline = ""
 
 
 --get value from string like "p1":"1","f":"getAllSensors"
@@ -107,7 +108,7 @@ local function connectServer()
      
      socket:on("connection", function(sck, response)
           --print("c")
-          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+          socket:send(strOnline)
           --print(node.heap())
           bConnected = true
      end)
@@ -139,7 +140,7 @@ end
 local function keepOnline()
      --print("k")
      if bConnected == true then
-          socket:send("{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!")
+          socket:send(strOnline)
      else
           connectServer()         
      end
@@ -177,6 +178,8 @@ function M.init(gw,userkey)
      if(_G["userKey"] ~= nil) then userKey = _G["userKey"]
      else userKey = userkey
      end
+
+     strOnline = "{\"method\":\"update\",\"gatewayNo\":\""..gateWay.."\",\"userkey\":\""..userKey.."\"}&^!"
 
      connectServer()
      tmr.alarm(1, 50000, 1, function() 
