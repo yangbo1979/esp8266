@@ -23,13 +23,23 @@ _G[moduleName] = M
 
 local ServerIP
 
-local gatewayNo
+local gateWay
 local userKey
+local sn
 local sensorValueTable
+local apiUrl = ""
 
 function M.init(gw,ukey)
-     gatewayNo =gw
-     userKey =ukey
+     if(_G["gateWay"] ~= nil) then gateWay = _G["gateWay"]
+     else gateWay = gw
+     end
+     if(_G["userKey"] ~= nil) then userKey = _G["userKey"]
+     else userKey = userkey
+     end
+     	apiUrl = "UpdateSensors/"..gateWay
+     if(_G["sn"] ~= nil) then sn = _G["sn"]
+     	apiUrl = "UpdateSensorsBySN/"..sn
+     end
      sensorValueTable = {}
 end
 
@@ -60,9 +70,10 @@ function M.sendSensorValue(sname,svalue)
      
      --开始连接服务器
      socket:connect(80, ServerIP)
+     --print(apiUrl)
      socket:on("connection", function(sck) end)
      --HTTP请求头定义
-     socket:send("POST /api/V1/gateway/UpdateSensors/"..gatewayNo.." HTTP/1.1\r\n" ..
+     socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
                     "Host: www.lewei50.com\r\n" ..
                     "Content-Length: " .. string.len(PostData) .. "\r\n" ..
                     "userkey: "..userKey.."\r\n\r\n" ..
