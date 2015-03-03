@@ -61,24 +61,24 @@ srv:listen(80,function(conn)
           conn:send("<font color=\"red\">[<i>".._G["wifiStatue"].."</i>]</color>")
           if(_G["wifiStatue"]=="Saved") then
           conn:send("<br>wait 30 sec<br>Server lost mean NO ERROR MET.")
-          end
-          conn:send("<FORM action=\"\" method=\"POST\">")
-          conn:send("<table><tr><td>")
-          
-          for vK,vN in ipairs(_G["config"]) do
-          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"text\" name=\""..vN.name.."\" value=\"")
-          if(_G[vN.name] ~= nil) then 
-          conn:send(_G[vN.name])
-          end
-          conn:send("\"></td></tr>")
-          end
-          conn:send("<tr><td><input type=\"submit\" value=\"SAVE\"></td></tr>")
-          conn:send("</table>")
-          conn:send("</form></div>")
-          conn:send("</body>")
-          conn:send("</html>")
-          conn:close()
-
+          else
+	          conn:send("<FORM action=\"\" method=\"POST\">")
+	          conn:send("<table><tr><td>")
+	          
+	          for vK,vN in ipairs(_G["config"]) do
+	          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"text\" name=\""..vN.name.."\" value=\"")
+	          if(_G[vN.name] ~= nil) then 
+	          conn:send(_G[vN.name])
+	          end
+	          conn:send("\"></td></tr>")
+	          end
+	          conn:send("<tr><td><input type=\"submit\" value=\"SAVE\"></td></tr>")
+	          conn:send("</table>")
+	          conn:send("</form></div>")
+	          conn:send("</body>")
+	          conn:send("</html>")
+	          conn:close()
+					end
           if(_G["wifiStatue"]=="Saved") then
                print("reboot")
                tmr.alarm(0,3000,0,function()node.restart() end )
