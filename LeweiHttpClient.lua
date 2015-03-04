@@ -20,8 +20,8 @@ end)
 local moduleName = ...
 local M = {}
 _G[moduleName] = M
-
-local ServerIP
+local serverName = "open.lewei50.com"
+local serverIP = ""
 
 local gateWay
 local userKey
@@ -63,18 +63,19 @@ function M.sendSensorValue(sname,svalue)
      socket=net.createConnection(net.TCP, 0)
      
      --域名解析IP地址并赋值
-     socket:dns("www.lewei50.com", function(conn, ip)
-          ServerIP = ip
-          print("Connection IP:" .. ServerIP)
+     if(serverIp =="") then
+     socket:dns(serverName, function(conn, ip)
+          serverIP = ip
+          print("Connection IP:" .. serverIP)
           end)
-     
+     end
      --开始连接服务器
-     socket:connect(80, ServerIP)
+     socket:connect(80, serverIP)
      --print(apiUrl)
      socket:on("connection", function(sck) end)
      --HTTP请求头定义
      socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
-                    "Host: www.lewei50.com\r\n" ..
+                    "Host: "..serverName.."\r\n" ..
                     "Content-Length: " .. string.len(PostData) .. "\r\n" ..
                     "userkey: "..userKey.."\r\n\r\n" ..
                     PostData .. "\r\n")
@@ -83,4 +84,6 @@ function M.sendSensorValue(sname,svalue)
           print(response)
           end)
      sensorValueTable  = {}
+     socket:close()
+     socket= nil
 end

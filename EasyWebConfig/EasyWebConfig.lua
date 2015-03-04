@@ -3,20 +3,12 @@
 -- LICENCE: http://opensource.org/licenses/MIT
 -- yangbo<gyangbo@gmail.com>
 --------------------------------------------------------------------------------
---[[
-刷入此代码，会自动建立ESP8266+id的无线网，密码是12345678。
-连上后通过192.168.4.1的网页来配置，里面的内容是需要连接的无线网的ssid和密码，其它需要配置的，可以模仿示例自行添加
-如果配置成功，此无线网会自动取消，如果配置失败，可以重新配置。
-如果无线网配置成功但其他配置错误，可以通过关掉上级路由器后，重启ESP8266来重新配置（模拟无线网失效）
-建议刷入代码后，用node.compile("EasyWebConfig.lua")来编译成lc文件，减小内存使用
-]]--
+
 --[[
 here is the demo.lua:
 require("EasyWebConfig")
---这里通过web配置的gateWay和userKey可以在你的代码里通过_G["gateWay"],_G["userKey"]来直接使用
 --EasyWebConfig.addVar("gateWay")
 --EasyWebConfig.addVar("userKey")
---这里的demo.lua是需要运行的自己的代码文件
 EasyWebConfig.doMyFile("demo.lua")
 --]]
 local moduleName = ...
