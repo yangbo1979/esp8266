@@ -61,6 +61,9 @@ if( file.open("network_user_cfg.lua") ~= nil) then
                               --print("---")
                               --for n in pairs(_G) do print(n) end
                               --print(node.heap())
+                              _G["EasyWebConfig"]=nil
+                              package.loaded["network_user_cfg"]=nil
+                              package.loaded["EasyWebConfig"]=nil
                               dofile(userScriptFile) 
                          end
                     else print("FailToConnect,LoadDefault")

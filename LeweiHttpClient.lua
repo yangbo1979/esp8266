@@ -61,9 +61,10 @@ function M.sendSensorValue(sname,svalue)
      end
 
      if(serverIP ~= nil) then
+     
      socket:connect(80, serverIP)
      socket:on("connection", function(sck, response)
-     
+          
           --定义数据变量格式
           PostData = "["
           for i,v in pairs(sensorValueTable) do 
@@ -74,24 +75,23 @@ function M.sendSensorValue(sname,svalue)
           PostData = PostData .."{\"Name\":\""..sname.."\",\"Value\":\"" .. svalue .. "\"}"
           PostData = PostData .. "]"
           --HTTP请求头定义
-          sendStr = "POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
-                    "Host: "..serverName.."\r\n" ..
-                    "Content-Length: " .. string.len(PostData) .. "\r\n" 
-                    if(userKey~=nil) then sendStr = sendStr.."userkey: "..userKey.."\r\n" end
-                    sendStr = sendStr.."\r\n"..PostData .. "\r\n"
-                    socket:send(sendStr)
-                         print(sendStr)
-                    end)
-          socket:on("sent", function(sck, response)
-               print(tmr.now().."sent")
-          sendStr = ""
-          sensorValueTable  = {}
-     end)
+          socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n")
+          socket:send("Host: "..serverName.."\r\n")
+          socket:send("Content-Length: " .. string.len(PostData) .. "\r\n")
+          if(userKey~=nil) then socket:send("userkey: "..userKey.."\r\n") end
+          socket:send("\r\n"..PostData .. "\r\n")
+          end)
+          --socket:on("sent", function(sck, response)
+               --print(tmr.now().."sent")
+          --sensorValueTable  = {}
+          --end)
      
      --HTTP响应内容
      socket:on("receive", function(sck, response)
-          print(response)
+          --print(response)
+          PostData = nil
           socket:close()
+          print(node.heap())
         end)
      end
 end

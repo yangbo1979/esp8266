@@ -77,8 +77,8 @@ srv:listen(80,function(conn)
 	          conn:send("</form></div>")
 	          conn:send("</body>")
 	          conn:send("</html>")
-	          conn:close()
 					end
+	        conn:close()
           if(_G["wifiStatue"]=="Saved") then
                print("reboot")
                tmr.alarm(0,3000,0,function()node.restart() end )
