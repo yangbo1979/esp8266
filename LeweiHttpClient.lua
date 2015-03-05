@@ -72,17 +72,21 @@ function M.sendSensorValue(sname,svalue)
      --开始连接服务器
      socket:connect(80, serverIP)
      --print(apiUrl)
-     socket:on("connection", function(sck) end)
-     --HTTP请求头定义
-     socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
-                    "Host: "..serverName.."\r\n" ..
-                    "Content-Length: " .. string.len(PostData) .. "\r\n" ..
-                    "userkey: "..userKey.."\r\n\r\n" ..
-                    PostData .. "\r\n")
+     socket:on("connection", function(sck, response)
+					    --HTTP请求头定义
+					    socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
+							"Host: "..serverName.."\r\n" ..
+							"Content-Length: " .. string.len(PostData) .. "\r\n" ..
+							"userkey: "..userKey.."\r\n\r\n" ..
+							PostData .. "\r\n")
+     				end)
+     socket:on("sent", function(sck, response)
+          print(tmr.now().."sent")
+     end)
      --HTTP响应内容
-     socket:on("receive", function(sck, response)
-          print(response)
-          end)
+     --socket:on("receive", function(sck, response)
+          --print(response)
+        end)
      sensorValueTable  = {}
      socket:close()
      socket= nil
