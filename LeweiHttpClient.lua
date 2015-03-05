@@ -21,13 +21,14 @@ local moduleName = ...
 local M = {}
 _G[moduleName] = M
 local serverName = "open.lewei50.com"
-local serverIP = ""
+local serverIP
 
 local gateWay
 local userKey
 local sn
 local sensorValueTable
 local apiUrl = ""
+local socket = nil
 
 function M.init(gw,ukey)
      if(_G["gateWay"] ~= nil) then gateWay = _G["gateWay"]
@@ -44,50 +45,53 @@ function M.init(gw,ukey)
 end
 
 function M.appendSensorValue(sname,svalue)
-     print ("appending")
      sensorValueTable[""..sname]=""..svalue
 end
 
 function M.sendSensorValue(sname,svalue)
-     --定义数据变量格式
-     PostData = "["
-     for i,v in pairs(sensorValueTable) do 
-          PostData = PostData .. "{\"Name\":\""..i.."\",\"Value\":\"" .. v .. "\"},"
-          --print(i)
-          --print(v) 
-     end
-     PostData = PostData .."{\"Name\":\""..sname.."\",\"Value\":\"" .. svalue .. "\"}"
-     PostData = PostData .. "]"
-     print(PostData)
      --创建一个TCP连接
      socket=net.createConnection(net.TCP, 0)
-     
+
      --域名解析IP地址并赋值
-     if(serverIp =="") then
+     if(serverIP == nil) then
      socket:dns(serverName, function(conn, ip)
+          print("Connection IP:" .. ip)
           serverIP = ip
-          print("Connection IP:" .. serverIP)
-          end)
+          end)     
      end
-     --开始连接服务器
+
+     if(serverIP ~= nil) then
      socket:connect(80, serverIP)
-     --print(apiUrl)
      socket:on("connection", function(sck, response)
-					    --HTTP请求头定义
-					    socket:send("POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
-							"Host: "..serverName.."\r\n" ..
-							"Content-Length: " .. string.len(PostData) .. "\r\n" ..
-							"userkey: "..userKey.."\r\n\r\n" ..
-							PostData .. "\r\n")
-     				end)
-     socket:on("sent", function(sck, response)
-          print(tmr.now().."sent")
+     
+          --定义数据变量格式
+          PostData = "["
+          for i,v in pairs(sensorValueTable) do 
+               PostData = PostData .. "{\"Name\":\""..i.."\",\"Value\":\"" .. v .. "\"},"
+               --print(i)
+               --print(v) 
+          end
+          PostData = PostData .."{\"Name\":\""..sname.."\",\"Value\":\"" .. svalue .. "\"}"
+          PostData = PostData .. "]"
+          --HTTP请求头定义
+          sendStr = "POST /api/V1/gateway/"..apiUrl.." HTTP/1.1\r\n" ..
+                    "Host: "..serverName.."\r\n" ..
+                    "Content-Length: " .. string.len(PostData) .. "\r\n" 
+                    if(userKey~=nil) then sendStr = sendStr.."userkey: "..userKey.."\r\n" end
+                    sendStr = sendStr.."\r\n"..PostData .. "\r\n"
+                    socket:send(sendStr)
+                         print(sendStr)
+                    end)
+          socket:on("sent", function(sck, response)
+               print(tmr.now().."sent")
+          sendStr = ""
+          sensorValueTable  = {}
      end)
+     
      --HTTP响应内容
-     --socket:on("receive", function(sck, response)
-          --print(response)
-        --end)
-     sensorValueTable  = {}
-     socket:close()
-     socket= nil
+     socket:on("receive", function(sck, response)
+          print(response)
+          socket:close()
+        end)
+     end
 end
