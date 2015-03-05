@@ -86,7 +86,7 @@ function M.sendSensorValue(sname,svalue)
      --HTTP响应内容
      --socket:on("receive", function(sck, response)
           --print(response)
-        end)
+        --end)
      sensorValueTable  = {}
      socket:close()
      socket= nil
