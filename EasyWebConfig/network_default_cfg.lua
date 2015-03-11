@@ -16,7 +16,7 @@ cfg.ssid=ssid
 cfg.pwd=password
 wifi.ap.config(cfg)
 print(wifi.ap.getip())
-cfg = nil
+
 --  http server
 
 
@@ -92,9 +92,9 @@ end)
 
           if(_G["wifiStatue"]=="..." or _G["wifiStatue"]=="Failed") then 
                --keep server open for 10 min to configure
-               print("count down")
+               --print("count down")
                tmr.alarm(0,600000,0,function()
-               print("end")
-               node.restart() 
+               print("2nd try")
+               node.restart()
                end )
           end
