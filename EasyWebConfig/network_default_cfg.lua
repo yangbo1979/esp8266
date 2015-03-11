@@ -16,8 +16,10 @@ cfg.ssid=ssid
 cfg.pwd=password
 wifi.ap.config(cfg)
 print(wifi.ap.getip())
-
+cfg = nil
 --  http server
+
+
 srv=net.createServer(net.TCP)
 srv:listen(80,function(conn)
      conn:on("receive",function(conn,payload)
@@ -36,7 +38,6 @@ srv:listen(80,function(conn)
           end
           paraStr = string.sub(payload,j)
           
-          if(_G["wifiStatue"] == nil) then _G["wifiStatue"]="..." end
 
           --there should be a "=" in Post data,such as ssid=id&password=ps
           if (string.find(paraStr,"=")~=nil) then
@@ -49,7 +50,8 @@ srv:listen(80,function(conn)
                print("store ok")
                file.close()
           end
-
+          paraStr = nil
+          
           -- html-output
           conn:send("HTTP/1.0 200 OK\r\nContent-type: text/html\r\nServer: ESP8266\r\n\n")
           conn:send("<html><head>")
@@ -57,7 +59,7 @@ srv:listen(80,function(conn)
           conn:send("<meta http-equiv=\"refresh\" content=\"30\">")
           end
           conn:send("</head><body>")
-          conn:send("<div><h2>Configuration</h2>")
+          conn:send("<h2>Configuration</h2>")
           conn:send("<font color=\"red\">[<i>".._G["wifiStatue"].."</i>]</color>")
           if(_G["wifiStatue"]=="Saved") then
           conn:send("<br>wait 30 sec<br>Server lost mean NO ERROR MET.")
@@ -74,7 +76,7 @@ srv:listen(80,function(conn)
 	          end
 	          conn:send("<tr><td><input type=\"submit\" value=\"SAVE\"></td></tr>")
 	          conn:send("</table>")
-	          conn:send("</form></div>")
+	          conn:send("</form>")
 	          conn:send("</body>")
 	          conn:send("</html>")
 					end
@@ -82,9 +84,17 @@ srv:listen(80,function(conn)
           if(_G["wifiStatue"]=="Saved") then
                print("reboot")
                tmr.alarm(0,3000,0,function()node.restart() end )
-          elseif(_G["wifiStatue"]=="..." or _G["wifiStatue"]=="Failed") then 
-               --keep server open for 10 min to configure
-               tmr.alarm(0,600000,0,function()node.restart() end )
           end
      end)
+     
+     
 end)
+
+          if(_G["wifiStatue"]=="..." or _G["wifiStatue"]=="Failed") then 
+               --keep server open for 10 min to configure
+               print("count down")
+               tmr.alarm(0,600000,0,function()
+               print("end")
+               node.restart() 
+               end )
+          end

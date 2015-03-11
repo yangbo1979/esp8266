@@ -14,7 +14,7 @@ EasyWebConfig.doMyFile("demo.lua")
 local moduleName = ...
 local M = {}
 _G[moduleName] = M
-_G["wifiStatue"] = nil
+_G["wifiStatue"] = "..."
 
 _G["config"]  = {}
 
@@ -35,7 +35,6 @@ M.addVar("password")
 --try to open user configuration file
 if( file.open("network_user_cfg.lua") ~= nil) then
      require("network_user_cfg")
-     if true then  --change to if true
           --print("set up wifi mode")
           wifi.setmode(wifi.STATION)
           --please config ssid and password according to settings of your wireless router.
@@ -43,6 +42,7 @@ if( file.open("network_user_cfg.lua") ~= nil) then
           wifi.sta.connect()
           cnt = 0
           tmr.alarm(1, 1000, 1, function()
+               print("t")
                if (wifi.sta.getip() == nil) and (cnt < 10) then
                     --print(".")
                     cnt = cnt + 1
@@ -68,16 +68,15 @@ if( file.open("network_user_cfg.lua") ~= nil) then
                          end
                     else print("FailToConnect,LoadDefault")
                          _G["wifiStatue"] = "Failed"
-                         --node.led(800,50)
                          _G["wifissid"] = ssid
                          require("network_default_cfg")
                          print ("LoadDefault")
+                         _G["EasyWebConfig"] = nil
+                         package.loaded["EasyWebConfig"]=nil
                     end
                end
           end)
-     end
-else--not exist user config file,use default one
+else
      require("network_default_cfg")
      print ("LoadDefault")
-     --node.led(800,800)
 end
