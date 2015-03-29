@@ -42,7 +42,6 @@ if( file.open("network_user_cfg.lua") ~= nil) then
           wifi.sta.connect()
           cnt = 0
           tmr.alarm(1, 1000, 1, function()
-               print("t")
                if (wifi.sta.getip() == nil) and (cnt < 10) then
                     --print(".")
                     cnt = cnt + 1
@@ -50,7 +49,6 @@ if( file.open("network_user_cfg.lua") ~= nil) then
                     tmr.stop(1)
                     if (cnt < 10) then print("IP:"..wifi.sta.getip())
                          --_G["wifiStatue"] = "OK"
-                         --node.led(0,0)
                          if(userScriptFile ~="") then 
                               --print(node.heap())
                               --for n in pairs(_G) do print(n) end
@@ -67,12 +65,10 @@ if( file.open("network_user_cfg.lua") ~= nil) then
                               dofile(userScriptFile) 
                          end
                     else print("FailToConnect,LoadDefault")
+                         wifi.sta.disconnect()
                          _G["wifiStatue"] = "Failed"
-                         _G["wifissid"] = ssid
                          require("network_default_cfg")
                          print ("LoadDefault")
-                         _G["EasyWebConfig"] = nil
-                         package.loaded["EasyWebConfig"]=nil
                     end
                end
           end)

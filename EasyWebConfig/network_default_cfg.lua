@@ -58,14 +58,19 @@ srv:listen(80,function(conn)
           if(_G["wifiStatue"]=="Saved") then
           conn:send("<meta http-equiv=\"refresh\" content=\"30\">")
           end
-          conn:send("</head><body>")
-          conn:send("<h2>Configuration</h2>")
+          conn:send("</head><body><table><tr><td colspan=\"2\">")
+          file.open("logo.htm","r")
+          --for line in file.readLine() do 
+          conn:send(file.read())
+          --end
+          file.close()
+          conn:send("</td></tr><tr><td colspan=\"2\"><h2>Configuration</h2></div>")
           conn:send("<font color=\"red\">[<i>".._G["wifiStatue"].."</i>]</color>")
           if(_G["wifiStatue"]=="Saved") then
-          conn:send("<br>wait 30 sec<br>Server lost mean NO ERROR MET.")
+          conn:send("<br>wait 30 sec<br>Server lost mean NO ERROR MET.</td></tr>")
           else
 	          conn:send("<FORM action=\"\" method=\"POST\">")
-	          conn:send("<table><tr><td>")
+	          conn:send("<tr><td>")
 	          
 	          for vK,vN in ipairs(_G["config"]) do
 	          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"text\" name=\""..vN.name.."\" value=\"")
@@ -75,8 +80,8 @@ srv:listen(80,function(conn)
 	          conn:send("\"></td></tr>")
 	          end
 	          conn:send("<tr><td><input type=\"submit\" value=\"SAVE\"></td></tr>")
-	          conn:send("</table>")
 	          conn:send("</form>")
+               conn:send("</table>")
 	          conn:send("</body>")
 	          conn:send("</html>")
 					end
