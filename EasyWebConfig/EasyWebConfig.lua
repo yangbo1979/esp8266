@@ -34,6 +34,8 @@ M.addVar("password")
 
 --try to open user configuration file
 if( file.open("network_user_cfg.lua") ~= nil) then
+     ssid=""
+     password=""
      require("network_user_cfg")
           --print("set up wifi mode")
           wifi.setmode(wifi.STATION)
