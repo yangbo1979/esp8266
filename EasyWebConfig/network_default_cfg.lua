@@ -73,7 +73,13 @@ srv:listen(80,function(conn)
 	          conn:send("<tr><td>")
 	          
 	          for vK,vN in ipairs(_G["config"]) do
-	          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"text\" name=\""..vN.name.."\" value=\"")
+	          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"")
+		  if(vN.name == "password") then
+		  	conn:send(vN.name)
+		  else
+		  	conn:send("text")
+		  end
+	          conn:send("\" name=\""..vN.name.."\" value=\"")
 	          if(_G[vN.name] ~= nil) then 
 	          conn:send(_G[vN.name])
 	          end
