@@ -59,11 +59,9 @@ srv:listen(80,function(conn)
           conn:send("<meta http-equiv=\"refresh\" content=\"30\">")
           end
           conn:send("</head><body><table><tr><td colspan=\"2\">")
-          file.open("logo.htm","r")
-          --for line in file.readLine() do 
-          conn:send(file.read())
-          --end
-          file.close()
+          --file.open("logo.htm","r")
+          --conn:send(file.read())
+          --file.close()
           conn:send("</td></tr><tr><td colspan=\"2\"><h2>Configuration</h2></div>")
           conn:send("<font color=\"red\">[<i>".._G["wifiStatue"].."</i>]</color>")
           if(_G["wifiStatue"]=="Saved") then
