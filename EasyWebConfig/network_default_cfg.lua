@@ -3,7 +3,7 @@ password="12345678"
 
 function decodeURI(s)
     s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
-    return s
+    return s.gsub(s,'\+',' ')
 end
 
 
