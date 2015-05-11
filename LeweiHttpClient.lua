@@ -39,10 +39,10 @@ function M.init(gw,ukey)
      else userKey = userkey
      end
      	apiUrl = "UpdateSensors/"..gateWay
-     	apiLogUrl = "UpdateSensors/updatelog/"..gateWay
+     	apiLogUrl = "updatelog/"..gateWay
      if(_G["sn"] ~= nil) then sn = _G["sn"]
      	apiUrl = "UpdateSensorsBySN/"..sn
-     	apiLogUrl = "UpdateSensors/updatelogBySN/"..sn
+     	apiLogUrl = "updatelogBySN/"..sn
      end
      sensorValueTable = {}
 end
