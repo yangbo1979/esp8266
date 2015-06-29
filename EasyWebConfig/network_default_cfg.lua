@@ -78,8 +78,8 @@ srv:listen(80,function(conn)
 	          conn:send("<tr><td>"..vN.name.."</td><td><input type=\"")
 		  if(vN.name == "password") then
 		  	conn:send(vN.name)
-            elseif(vN.name == "sn" and _G["sn"] ~=nil) then
-              conn:send("text\" disabled=\"disabled")
+            --elseif(vN.name == "sn" and _G["sn"] ~=nil) then
+              --conn:send("text\" disabled=\"disabled")
 		  else
 		  	conn:send("text")
 		  end
