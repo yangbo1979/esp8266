@@ -102,15 +102,13 @@ srv:listen(80,function(conn)
           end
           file.close()
      end)
-     
-     
 end)
 
           if(_G["wifiStatue"]=="..." or _G["wifiStatue"]=="Failed") then 
                --keep server open for 10 min to configure
                --print("count down")
-               tmr.alarm(0,3000000,0,function()
-               print("2nd try")
+               tmr.alarm(0,2500000,0,function()
+               --print("2nd try")
                node.restart()
                end )
           end
