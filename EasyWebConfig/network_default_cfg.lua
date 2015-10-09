@@ -107,7 +107,7 @@ end)
           if(_G["wifiStatue"]=="..." or _G["wifiStatue"]=="Failed") then 
                --keep server open for 10 min to configure
                --print("count down")
-               tmr.alarm(0,250000,0,function()
+               tmr.alarm(0,240000,0,function()
                --print("2nd try")
                node.restart()
                end )
