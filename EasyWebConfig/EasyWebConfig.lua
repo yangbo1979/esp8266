@@ -36,6 +36,7 @@ end
 
 --try to open user configuration file
 if( file.open("network_user_cfg.lua") ~= nil) then
+     wifi.setmode(wifi.STATION)
      ssid=""
      password=""
      dofile("network_user_cfg.lua")
