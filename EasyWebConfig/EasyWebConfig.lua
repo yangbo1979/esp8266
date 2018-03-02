@@ -26,24 +26,72 @@ function M.doMyFile(fName)
 end
 
 function M.addVar(vName)
-     if(_G["config"].vName == nil) then
-          table.insert(_G["config"],{name=vName,value=""})
-     end
+     table.insert(_G["config"],{name=vName,value=""})
 end
 
---M.addVar("ssid")
---M.addVar("password")
+M.addVar("ssid")
+M.addVar("password")
 
 --try to open user configuration file
 if( file.open("network_user_cfg.lua") ~= nil) then
-     wifi.setmode(wifi.STATION)
      ssid=""
      password=""
-     dofile("network_user_cfg.lua")
-     if(gateWay ~= nil and userKey~=nil)then
-     dofile("run.lua") 
-     end
+     require("network_user_cfg")
+          --print("set up wifi mode")
+          wifi.setmode(wifi.STATION)
+          station_cfg={}
+          station_cfg.ssid=ssid
+          station_cfg.pwd=password
+          --please config ssid and password according to settings of your wireless router.
+          wifi.sta.config(station_cfg)
+          wifi.sta.connect()
+          cnt = 0
+          tmr.alarm(1, 1000, 1, function()
+               if (wifi.sta.getip() == nil) and (cnt < 10) then
+                    --print(".")
+                    cnt = cnt + 1
+               else
+                    tmr.stop(1)
+                    if (cnt < 10) then print("IP:"..wifi.sta.getip())
+                         --_G["wifiStatue"] = "OK"
+                         if(userScriptFile ~="") then 
+                              --print(node.heap())
+                              --for n in pairs(_G) do print(n) end
+                              ssid= nil
+                              password = nil
+                              _G["config"] = nil
+                              --M = nil
+                              --print("---")
+                              --for n in pairs(_G) do print(n) end
+                              --print(node.heap())
+                              _G["EasyWebConfig"]=nil
+                              package.loaded["network_user_cfg"]=nil
+                              package.loaded["EasyWebConfig"]=nil
+                              dofile(userScriptFile) 
+                         end
+                    else print("FailToConnect,LoadDefault")
+                         wifi.sta.disconnect()
+                         _G["wifiStatue"] = "Failed"
+                         require("network_default_cfg")
+                         print ("LoadDefault")
+                         disp:firstPage()
+                         repeat
+                         disp:drawStr(10,10,"Configuration:")
+                         disp:drawStr(10,25,"WIFI:"..ssid)
+                         disp:drawStr(10,35,"PSWD:"..password)
+                         disp:drawStr(10,45,"Open URL:192.168.4.1")
+                         until disp:nextPage() == false 
+                    end
+               end
+          end)
 else
-     dofile("network_default_cfg.lua")
+     require("network_default_cfg")
      print ("LoadDefault")
+     disp:firstPage()
+     repeat
+     disp:drawStr(10,10,"Configuration:")
+     disp:drawStr(10,25,"WIFI:"..ssid)
+     disp:drawStr(10,35,"PSWD:"..password)
+     disp:drawStr(10,45,"Open URL:192.168.4.1")
+     until disp:nextPage() == false 
 end
